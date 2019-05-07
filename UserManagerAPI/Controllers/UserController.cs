@@ -46,7 +46,7 @@ namespace UserManagerAPI.Controllers
 
             if (user == null)
             {
-                return NotFound();
+                return NotFound("User not found with the specified Id");
             }
 
             return user;
@@ -84,6 +84,11 @@ namespace UserManagerAPI.Controllers
         [Route("UpdateMyUser")]
         public ActionResult<UserAllViewModel> UpdateMyUser(UserUpdateViewModel user)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             bool isUpdated = _dataRepository.UpdateMyUser(user);
 
             if (!isUpdated)
@@ -104,17 +109,17 @@ namespace UserManagerAPI.Controllers
         [Route("UpdateMyProfilePic")]
         [HttpPost]
         [Consumes("multipart/form-data")]
-        public ActionResult<string> UpdateMyProfilePic([FromForm] FileInputModel model)
+        public ActionResult<string> UpdateMyProfilePic([FromForm] IFormFile fileToUpload)
         {
             byte[] userPicBytes;
 
             using (MemoryStream ms = new MemoryStream())
             {
-                model.FileToUpload.OpenReadStream().CopyTo(ms);
+                fileToUpload.OpenReadStream().CopyTo(ms);
                 userPicBytes = ms.ToArray();
             }
 
-            string validateErrorMessage = ValidatePicture(model.FileToUpload, userPicBytes.Length);
+            string validateErrorMessage = ValidatePicture(fileToUpload, userPicBytes.Length);
 
             if (userPicBytes == null)
             {
@@ -125,7 +130,7 @@ namespace UserManagerAPI.Controllers
                 throw new Exception(validateErrorMessage);
             }
 
-            byte[] userPicBytesResized = ResizeImage(userPicBytes, 1024, 1024, model.FileToUpload.ContentType);
+            byte[] userPicBytesResized = ResizeImage(userPicBytes, 1024, 1024, fileToUpload.ContentType);
 
             bool isUpdated = _dataRepository.UpdateMyProfilePic(userPicBytesResized);
 
@@ -217,11 +222,5 @@ namespace UserManagerAPI.Controllers
         }
 
         #endregion
-    }
-
-    public class FileInputModel
-    {
-        public string Name { get; set; }
-        public IFormFile FileToUpload { get; set; }
     }
 }

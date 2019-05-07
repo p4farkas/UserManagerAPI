@@ -33,7 +33,7 @@ namespace UserManagerAPI.Models
             return myUser.FirstOrDefault();
         }
 
-        public UserViewModel GetUser(int id, string routerBase)
+        public UserViewModel GetUser(int id, string profilePicLink)
         {
             var userView = from user in _userServiceContext.Users
                            where user.Id == id
@@ -44,7 +44,7 @@ namespace UserManagerAPI.Models
                                LastName = user.LastName,
                                Email = user.IsEmailVisible ? user.Email : null,
                                TelNumber = user.IsTelNumberVisible ? user.TelNumber : null,
-                               ProfilePicUrl = UrlCombine(routerBase, id.ToString())
+                               ProfilePicUrl = profilePicLink
                            };
 
             return userView.FirstOrDefault();

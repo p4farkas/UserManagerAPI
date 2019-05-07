@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -18,6 +19,7 @@ namespace UserManagerAPI.Models
         public string LastName { get; set; }
         [Required]
         [StringLength(200)]
+        [EmailAddress]
         public string Email { get; set; }
         [Required]
         [StringLength(200)]
@@ -66,12 +68,23 @@ namespace UserManagerAPI.Models
 
     public class UserUpdateViewModel
     {
+        [Required]
+        [StringLength(200)]
         public string FirstName { get; set; }
+        [Required]
+        [StringLength(200)]
         public string LastName { get; set; }
+        [Required]
+        [StringLength(200)]
+        [EmailAddress]
         public string Email { get; set; }
+        [Required]
+        [StringLength(200)]
         [JsonProperty(PropertyName = "telephoneNumber")]
         public string TelNumber { get; set; }
+        [DefaultValue(false)]
         public bool IsEmailVisible { get; set; }
+        [DefaultValue(false)]
         public bool IsTelNumberVisible { get; set; }
     }
 }
